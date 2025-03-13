@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hit & Blow</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Hit & Blow（4桁）</h1>
+        <p id="instruction">4桁の異なる数字を入力してください</p>
+
+        <div id="firstAttemptInputs">
+            <input type="text" id="userInput1" maxlength="4" placeholder="候補1">
+            <input type="text" id="userInput2" maxlength="4" placeholder="候補2">
+        </div>
+
+        <div id="normalAttemptInput" style="display: none;">
+            <input type="text" id="userInputSingle" maxlength="4" placeholder="数字を入力">
+        </div>
+
+        <button onclick="checkAnswer()">チェック</button>
+        <button onclick="resetGame()">リセット</button>
+        <p id="message"></p>
+        <h2>履歴</h2>
+        <ul id="history"></ul>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
