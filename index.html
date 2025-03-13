@@ -4,28 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hit & Blow</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css"> <!-- 外部CSSファイルを読み込む -->
 </head>
 <body>
     <div class="container">
         <h1>Hit & Blow（4桁）</h1>
         <p id="instruction">4桁の異なる数字を入力してください</p>
 
+        <!-- 最初の選択（2つの候補を入力） -->
         <div id="firstAttemptInputs">
-            <input type="text" id="userInput1" maxlength="4" placeholder="候補1">
-            <input type="text" id="userInput2" maxlength="4" placeholder="候補2">
+            <input type="text" id="userInput1" maxlength="4" placeholder="候補1"> <!-- 1つ目の候補 -->
+            <input type="text" id="userInput2" maxlength="4" placeholder="候補2"> <!-- 2つ目の候補 -->
+            <button onclick="evaluateFirstChoices()">チェック</button> <!-- 最初の候補を評価するボタン -->
         </div>
 
+        <!-- ユーザーが1つ目または2つ目の候補を選択するボタン -->
+        <div id="selectionButtons" style="display: none;">
+            <p id="choiceMessage"></p> <!-- 候補のHit & Blowの結果を表示 -->
+            <button id="select1" onclick="selectFirstChoice(1)"></button> <!-- 候補1を選択するボタン -->
+            <button id="select2" onclick="selectFirstChoice(2)"></button> <!-- 候補2を選択するボタン -->
+        </div>
+
+        <!-- 2回目以降の通常の入力フォーム（最初の選択後に表示） -->
         <div id="normalAttemptInput" style="display: none;">
-            <input type="text" id="userInputSingle" maxlength="4" placeholder="数字を入力">
+            <input type="text" id="userInputSingle" maxlength="4" placeholder="次の予測を入力"> <!-- 1つの入力フォーム -->
+            <button onclick="checkNormalAttempt()">チェック</button> <!-- 入力した数字をチェックするボタン -->
         </div>
 
-        <button onclick="checkAnswer()">チェック</button>
-        <button onclick="resetGame()">リセット</button>
-        <p id="message"></p>
+        <button onclick="resetGame()">リセット</button> <!-- ゲームをリセットするボタン -->
+        
+        <p id="message"></p> <!-- 結果メッセージを表示 -->
+
         <h2>履歴</h2>
-        <ul id="history"></ul>
+        <ul id="history"></ul> <!-- ユーザーの試行履歴を表示 -->
     </div>
-    <script src="script.js"></script>
+
+    <script src="script.js"></script> <!-- JavaScriptファイルを読み込む -->
 </body>
 </html>
