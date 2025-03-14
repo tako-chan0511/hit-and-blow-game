@@ -143,5 +143,6 @@ function disableInputs() {
 
 // ゲームをリセットする（ページをリロード）
 function resetGame() {
+    sessionStorage.removeItem("reloaded"); // セッションをクリア
     location.reload(); // 画面をリロードして初期状態に戻す
 }
