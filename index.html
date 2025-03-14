@@ -15,7 +15,7 @@
         <div id="firstAttemptInputs">
             <input type="text" id="userInput1" maxlength="4" placeholder="候補1"> <!-- 1つ目の候補 -->
             <input type="text" id="userInput2" maxlength="4" placeholder="候補2"> <!-- 2つ目の候補 -->
-            <button onclick="evaluateFirstChoices()">チェック</button> <!-- 最初の候補を評価するボタン -->
+            <button onclick="evaluateFirstChoices()" style="background-color: #c8e8c1">チェック</button> <!-- 最初の候補を評価するボタン -->
         </div>
 
         <!-- ユーザーが1つ目または2つ目の候補を選択するボタン -->
@@ -28,10 +28,10 @@
         <!-- 2回目以降の通常の入力フォーム（最初の選択後に表示） -->
         <div id="normalAttemptInput" style="display: none;">
             <input type="text" id="userInputSingle" maxlength="4" placeholder="次の予測を入力"> <!-- 1つの入力フォーム -->
-            <button onclick="checkNormalAttempt()">チェック</button> <!-- 入力した数字をチェックするボタン -->
+            <button onclick="checkNormalAttempt()" style="background-color: #8fc784">チェック</button> <!-- 入力した数字をチェックするボタン -->
         </div>
 
-        <button onclick="resetGame()">リセット</button> <!-- ゲームをリセットするボタン -->
+        <button onclick="resetGame()" style="background-color: #cfc5bc">リセット</button> <!-- ゲームをリセットするボタン -->
         
         <p id="message"></p> <!-- 結果メッセージを表示 -->
 
