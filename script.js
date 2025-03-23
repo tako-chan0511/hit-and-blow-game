@@ -1,4 +1,4 @@
-// 正解の4桁の数字を生成
+// 正解の4桁の数字を生成（２０２５０３２３）
 let answer = generateRandomNumber();
 let attempts = [];  // ユーザーの試行履歴を格納
 let isFirstAttempt = true; // 最初の試行かどうかを管理
