@@ -3,6 +3,20 @@ let answer = generateRandomNumber();
 let attempts = [];  // ユーザーの試行履歴を格納
 let isFirstAttempt = true; // 最初の試行かどうかを管理
 
+// すべての重複のない4桁の数字を事前に生成（AI候補用）
+let allCandidates = generateAllCandidates();
+
+function generateAllCandidates() {
+    let results = [];
+    for (let i = 0; i < 10000; i++) {
+        let str = i.toString().padStart(4, '0');
+        if (new Set(str).size === 4) {
+            results.push(str);
+        }
+    }
+    return results;
+}
+
 // 4桁の異なる数字をランダムに生成する関数
 function generateRandomNumber() {
     let digits = [];
@@ -20,7 +34,6 @@ function evaluateFirstChoices() {
     let userInput1 = document.getElementById("userInput1").value;
     let userInput2 = document.getElementById("userInput2").value;
 
-    // 入力が4桁の異なる数字かをチェック
     if (!isValidInput(userInput1) || !isValidInput(userInput2)) {
         document.getElementById("message").innerText = "4桁の異なる数字を入力してください。";
         return;
@@ -28,10 +41,10 @@ function evaluateFirstChoices() {
 
     let result1 = checkHitBlow(userInput1);
     let result2 = checkHitBlow(userInput2);
-    
+
     let score1 = result1.hit * 11 + result1.blow * 10;
     let score2 = result2.hit * 11 + result2.blow * 10;
-    
+
     let selectedInput, selectedHit, selectedBlow;
     if (score1 >= score2) {
         selectedInput = userInput1;
@@ -43,31 +56,26 @@ function evaluateFirstChoices() {
         selectedBlow = result2.blow;
     }
 
-    // 試行履歴に追加
     attempts.push({ guess: selectedInput, hit: selectedHit, blow: selectedBlow });
 
-    // 履歴を表示
-    let historyList = document.getElementById("history");
-    let listItem = document.createElement("li");
-    listItem.textContent = `${selectedInput} → Hit: ${selectedHit}, Blow: ${selectedBlow}`;
-    historyList.appendChild(listItem);
+    addHistory(selectedInput, selectedHit, selectedBlow);
 
     document.getElementById("message").innerText = selectedHit === 4 ? "正解！おめでとう！🎉" : `選択された候補: ${selectedInput} (Hit: ${selectedHit}, Blow: ${selectedBlow})`;
 
-    // 正解なら入力を無効化
     if (selectedHit === 4) {
         disableInputs();
         return;
     }
 
-    // 2回目以降のUI変更
     isFirstAttempt = false;
     document.getElementById("firstAttemptInputs").style.display = "none";
     document.getElementById("normalAttemptInput").style.display = "block";
     document.getElementById("instruction").innerText = "次の予測を入力してください";
+
+    showAISuggestion();
+    hideAISuggestion(); // ← 必ず非表示に戻す！
 }
 
-// 2回目以降の通常の入力処理
 function checkNormalAttempt() {
     let userInput = document.getElementById("userInputSingle").value;
     if (!isValidInput(userInput)) {
@@ -75,47 +83,86 @@ function checkNormalAttempt() {
         return;
     }
     let result = checkHitBlow(userInput);
-    let listItem = document.createElement("li");
-    listItem.textContent = `${userInput} → Hit: ${result.hit}, Blow: ${result.blow}`;
-    document.getElementById("history").appendChild(listItem);
-    
+    attempts.push({ guess: userInput, hit: result.hit, blow: result.blow });
+
+    addHistory(userInput, result.hit, result.blow);
+
     document.getElementById("message").innerText = result.hit === 4 ? "正解！おめでとう！🎉" : `結果: Hit ${result.hit}, Blow ${result.blow}`;
     if (result.hit === 4) {
         disableInputs();
+    } else {
+        showAISuggestion();
+        hideAISuggestion(); // ← 必ず非表示に戻す！
     }
 }
 
-// Hit & Blow を計算する関数
+function addHistory(guess, hit, blow) {
+    let listItem = document.createElement("li");
+    listItem.textContent = `${guess} → Hit: ${hit}, Blow: ${blow}`;
+    document.getElementById("history").appendChild(listItem);
+}
+
 function checkHitBlow(userInput) {
     let userDigits = userInput.split("").map(Number);
     let answerDigits = answer.split("").map(Number);
-
     let hit = 0;
     let blow = 0;
-
     for (let i = 0; i < 4; i++) {
         if (userDigits[i] === answerDigits[i]) {
-            hit++; // 同じ位置に同じ数字があればHit
+            hit++;
         } else if (answerDigits.includes(userDigits[i])) {
-            blow++; // 位置は違うが数字が含まれていればBlow
+            blow++;
         }
     }
-
     return { hit, blow };
 }
 
-// ユーザーの入力が4桁の異なる数字であるかチェック
 function isValidInput(input) {
     return /^\d{4}$/.test(input) && new Set(input).size === 4;
 }
 
-// 入力欄を無効化する
 function disableInputs() {
     document.querySelectorAll("input").forEach(input => input.disabled = true);
 }
 
-// ゲームをリセットする（ページをリロード）
 function resetGame() {
-    sessionStorage.removeItem("reloaded"); // セッションをクリア
-    location.reload(); // 画面をリロードして初期状態に戻す
+    sessionStorage.removeItem("reloaded");
+    location.reload();
 }
+
+function showAISuggestion() {
+    let filtered = allCandidates.filter(candidate => {
+        return attempts.every(attempt => {
+            let result = checkHitBlowForAI(candidate, attempt.guess);
+            return result.hit === attempt.hit && result.blow === attempt.blow;
+        });
+    });
+    let nextGuess = filtered.length ? filtered[0] : "候補なし";
+    document.getElementById("aiNextGuess").innerText = nextGuess;
+    // 表示のON/OFF制御はしない（ユーザーのボタン操作に任せる）
+}
+
+
+function checkHitBlowForAI(candidate, guess) {
+    let hit = 0, blow = 0;
+    for (let i = 0; i < 4; i++) {
+        if (candidate[i] === guess[i]) hit++;
+        else if (candidate.includes(guess[i])) blow++;
+    }
+    return { hit, blow };
+}
+
+// AI候補の表示・非表示を切り替える関数
+function toggleAISuggestion() {
+    const aiBox = document.getElementById("aiSuggestion");
+    if (aiBox.style.display === "none") {
+        aiBox.style.display = "block";
+    } else {
+        aiBox.style.display = "none";
+    }
+}
+function hideAISuggestion() {
+    const aiBox = document.getElementById("aiSuggestion");
+    aiBox.style.display = "none";
+}
+
