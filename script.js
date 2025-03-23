@@ -165,4 +165,3 @@ function hideAISuggestion() {
     const aiBox = document.getElementById("aiSuggestion");
     aiBox.style.display = "none";
 }
-
